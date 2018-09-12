@@ -195,11 +195,15 @@ let UIController = (function() {
 
         return (type === 'exp' ? '-' : '+') +
             ' ' + int + '.' + dec;
-        DEC
-        dec;
 
 
-    }
+    };
+
+    let nodeListForEach = function(list, callback) {
+        for (i = 0; i < list.length; i++) {
+            callback(list[i], i);
+        }
+    };
 
 
     return {
@@ -280,11 +284,6 @@ let UIController = (function() {
 
             let fields = document.querySelectorAll(DOMstrings.expensesPercLabel);
 
-            let nodeListForEach = function(list, callback) {
-                for (i = 0; i < list.length; i++) {
-                    callback(list[i], i);
-                }
-            };
 
             nodeListForEach(fields, function(current, index) {
 
@@ -313,6 +312,23 @@ let UIController = (function() {
 
         },
 
+        changedType: function() {
+
+            let fields = document.querySelectorAll(
+                DOMstrings.inputType + ',' +
+                DOMstrings.inputDescription + ',' +
+                DOMstrings.inputValue);
+
+
+            nodeListForEach(fields, function(cur) {
+                cur.classList.toggle('red-focus');
+            });
+
+            document.querySelector(DOMstrings.inputBtn).classList.toggle('red');
+
+
+
+        },
 
         getDOMstrings: function() {
             return DOMstrings
@@ -338,6 +354,8 @@ let controller = (function(budgetCtrl, UICtrl) {
         });
 
         document.querySelector(DOM.container).addEventListener('click', ctrlDeleteItem);
+
+        document.querySelector(DOM.inputType).addEventListener('change', UICtrl.changedType)
     };
 
     let updateBudget = function() {
