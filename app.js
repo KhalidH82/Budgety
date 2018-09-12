@@ -6,7 +6,21 @@ let budgetController = (function() {
         this.id = id;
         this.description = description;
         this.value = value;
+        this.percentage = -1;
     };
+
+    Expense.prototype.calcPercentage = function(totalIncome) {
+
+        if (totalIncome > 0) {
+            this.percentage = Math.round((this.value / totalIncome) * 100);
+        } else {
+            this.percentage = -1;
+        }
+    };
+
+    Expense.prototype.getPercentage = function() {
+        return this.percentage;
+    }
 
     let Income = function(id, description, value) {
         this.id = id;
@@ -104,6 +118,24 @@ let budgetController = (function() {
 
 
         },
+
+        calculatePercentages: function() {
+            data.allItems.exp.forEach((cur) => {
+                cur.calcPercentage(data.totals.inc);
+
+            })
+
+
+        },
+
+        getPercentages: function() {
+            let allPerc = data.allItems.exp.map((cur) => {
+                return cur.getPercentage();
+            });
+            return allPerc;
+
+        },
+
 
         getBudget: function() {
             return {
@@ -251,7 +283,17 @@ let controller = (function(budgetCtrl, UICtrl) {
         // 3. Display the budget on the UI
         UICtrl.displayBudget(budget);
 
-    }
+    };
+
+    let updatePercentages = function() {
+
+        // 1. Calculate percentages
+        budgetCtrl.calculatePercentages();
+        // 2. Read percentages from budget controller
+        let percentages = budgetCtrl.getPercentages();
+        // 3. Update the UI with the new percentages
+        console.log(percentages)
+    };
 
 
 
@@ -276,6 +318,9 @@ let controller = (function(budgetCtrl, UICtrl) {
             // 5. Calculate and Update Budget
             updateBudget();
 
+            // 6. Calculate and update percentages
+            updatePercentages();
+
         }
 
     };
@@ -297,6 +342,9 @@ let controller = (function(budgetCtrl, UICtrl) {
             UICtrl.deleteListItem(itemID);
             // 3. Update and show the new budget
             updateBudget();
+
+            // 4. Calculate and update percentages
+            updatePercentages();
         }
     };
 
